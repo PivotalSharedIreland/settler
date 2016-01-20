@@ -1,0 +1,7 @@
+**/*.iml
+build
+.gradle
+.idea
+node_modules
+*.js
+*.js.map

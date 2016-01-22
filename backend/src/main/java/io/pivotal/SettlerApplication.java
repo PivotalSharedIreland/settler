@@ -1,5 +1,7 @@
 package io.pivotal;
 
+import io.pivotal.property.PersistentPropertyProvider;
+import io.pivotal.property.PropertyProvider;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -13,7 +15,7 @@ public class SettlerApplication {
 
     @Bean
     public PropertyProvider propertyProvider() {
-        return new InMemoryPropertyProvider();
+        return new PersistentPropertyProvider();
     }
 }
 

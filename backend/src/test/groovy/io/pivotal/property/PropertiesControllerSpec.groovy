@@ -1,9 +1,8 @@
-package io.pivotal
+package io.pivotal.property
 
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import spock.lang.Ignore
 import spock.lang.Specification
 
 import static org.hamcrest.Matchers.equalTo
@@ -61,7 +60,6 @@ class PropertiesControllerSpec extends Specification {
     }
 
     def "should create a new property"() {
-
         given:
         def content = '{"address": "Address 2"}';
 
@@ -74,24 +72,23 @@ class PropertiesControllerSpec extends Specification {
         }
 
         response.andExpect(status().isCreated()).andExpect(jsonPath('$.address', equalTo('Address 2')))
-
     }
 
 
-    def "should fail if trying to provide an id"() {
+    def "should fail trying to create a property that already exists"() {
 
         given:
-        def content = '{"id": 1,  "address": "Test address"}';
+        def content = '{ "address": "something that already exists" }';
 
         when:
         def response = mockMvc.perform(post("/properties").contentType(MediaType.APPLICATION_JSON_UTF8).content(content))
 
         then:
-        0 * propertiesController.propertyProvider.save(_)
+        1 * propertiesController.propertyProvider.save(_ as Property) >> {
+            throw new PropertyAlreadyExistsException("Property already exists")
+        }
 
-        response.andExpect(status().isBadRequest())
-
-
+        response.andExpect(status().isConflict())
     }
 
 }

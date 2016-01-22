@@ -19,8 +19,28 @@ public class PersistentPropertyProvider implements PropertyProvider {
 
     @Override
     public Property save(Property property) {
-        if(propertyRepository.exists(property.getId())){
+        if (propertyAlreadyExists(property)) {
             throw new PropertyAlreadyExistsException("Property already exists");
+        }
+        return propertyRepository.save(property);
+    }
+
+    private boolean propertyAlreadyExists(Property property) {
+        return property.getId() != null && propertyRepository.exists(property.getId());
+    }
+
+    @Override
+    public void remove(Long id) {
+        Property property = this.findOne(id);
+        if (property != null) {
+            propertyRepository.delete(property);
+        }
+    }
+
+    @Override
+    public Property update(Property property) {
+        if (!propertyRepository.exists(property.getId())) {
+            throw new PropertyDoesNotExistsException("Property id " + property.getId() + " does not exist");
         }
         return propertyRepository.save(property);
     }

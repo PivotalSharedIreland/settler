@@ -7,7 +7,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+import java.util.Objects;
+
 import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @RestController
 @RequestMapping("/properties")
@@ -38,13 +41,40 @@ public class PropertiesController {
           return propertyProvider.save(property);
     }
 
+    @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
+    @ResponseStatus(NO_CONTENT)
+    public void delete(@PathVariable Long id) {
+        propertyProvider.remove(id);
+    }
+
+    @RequestMapping(value = "{id}", method = RequestMethod.PUT)
+    public Property update(@PathVariable Long id, @RequestBody Property property) {
+        if(!Objects.equals(id, property.getId())){
+            throw new ForbiddenActionException("Request body does not match the property id");
+        }
+        return propertyProvider.update(property);
+    }
+
     private boolean exists(Property property) {
         return property != null;
     }
 
     @ExceptionHandler(PropertyAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    private void handlePropertyAlreadyExistException(PropertyAlreadyExistsException ex){
+    private void handlePropertyAlreadyExistException(){
         //TODO for something
     }
+
+    @ExceptionHandler(PropertyDoesNotExistsException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    private void handlePropertyDoesNotExistsException(){
+        //TODO for something
+    }
+
+    @ExceptionHandler(ForbiddenActionException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    private void handleForbiddenException(){
+        //TODO for something
+    }
+
 }

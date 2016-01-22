@@ -7,8 +7,10 @@ import spock.lang.Specification
 
 import static org.hamcrest.Matchers.equalTo
 import static org.hamcrest.Matchers.hasSize
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
@@ -61,7 +63,7 @@ class PropertiesControllerSpec extends Specification {
 
     def "should create a new property"() {
         given:
-        def content = '{"address": "Address 2"}';
+        def content = '{"address": "Address 2"}'
 
         when:
         def response = mockMvc.perform(post("/properties").contentType(MediaType.APPLICATION_JSON_UTF8).content(content))
@@ -78,7 +80,7 @@ class PropertiesControllerSpec extends Specification {
     def "should fail trying to create a property that already exists"() {
 
         given:
-        def content = '{ "address": "something that already exists" }';
+        def content = '{ "address": "something that already exists" }'
 
         when:
         def response = mockMvc.perform(post("/properties").contentType(MediaType.APPLICATION_JSON_UTF8).content(content))
@@ -91,4 +93,65 @@ class PropertiesControllerSpec extends Specification {
         response.andExpect(status().isConflict())
     }
 
+    def "should delete a property"() {
+
+        given:
+        def content = '{ "address": "something that already exists" }'
+
+        when:
+        def response = mockMvc.perform(delete("/properties/1").contentType(MediaType.APPLICATION_JSON_UTF8).content(content))
+
+        then:
+        1 * propertiesController.propertyProvider.remove(1L)
+
+        response.andExpect(status().isNoContent())
+    }
+
+    def "should update the property"() {
+
+        given:
+        def content = '{"id" : "1" , "address": "New address" }'
+
+        when:
+        def response = mockMvc.perform(put("/properties/1").contentType(MediaType.APPLICATION_JSON_UTF8).content(content))
+
+        then:
+        1 * propertiesController.propertyProvider.update(_ as Property) >> { Property property ->
+             new Property(id: 1, address: "New address")
+        }
+
+        response.andExpect(status().isOk())
+                .andExpect(jsonPath('$.id', equalTo(1)))
+                .andExpect(jsonPath('$.address', equalTo('New address')))
+    }
+
+    def "should fail if I update a non existing property"() {
+
+        given:
+        def content = '{"id" : "1" , "address": "Faulty address" }'
+
+        when:
+        def response = mockMvc.perform(put("/properties/1").contentType(MediaType.APPLICATION_JSON_UTF8).content(content))
+
+        then:
+        1 * propertiesController.propertyProvider.update(_ as Property) >> { Property property ->
+            throw new PropertyDoesNotExistsException("Property does not exist")
+        }
+
+        response.andExpect(status().isNotFound())
+    }
+
+    def "should return forbidden if id does not match the proeperty id"() {
+
+        given:
+        def content = '{"id" : "2" , "address": "New address" }'
+
+        when:
+        def response = mockMvc.perform(put("/properties/1").contentType(MediaType.APPLICATION_JSON_UTF8).content(content))
+
+        then:
+        0 * propertiesController.propertyProvider.update(_ as Property)
+
+        response.andExpect(status().isForbidden())
+    }
 }

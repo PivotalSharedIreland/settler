@@ -1,6 +1,11 @@
 package io.pivotal.property;
 
+import com.google.common.collect.Lists;
+import io.pivotal.error.EntityAlreadyExistsException;
+import io.pivotal.error.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 public class PersistentPropertyProvider implements PropertyProvider {
 
@@ -8,8 +13,8 @@ public class PersistentPropertyProvider implements PropertyProvider {
     private PropertyRepository propertyRepository;
 
     @Override
-    public Iterable<Property> find() {
-        return propertyRepository.findAll();
+    public List<Property> findAll() {
+        return Lists.newArrayList(propertyRepository.findAll());
     }
 
     @Override
@@ -20,7 +25,7 @@ public class PersistentPropertyProvider implements PropertyProvider {
     @Override
     public Property save(Property property) {
         if (propertyAlreadyExists(property)) {
-            throw new PropertyAlreadyExistsException("Property already exists");
+            throw new EntityAlreadyExistsException("Property already exists");
         }
         return propertyRepository.save(property);
     }
@@ -40,7 +45,7 @@ public class PersistentPropertyProvider implements PropertyProvider {
     @Override
     public Property update(Property property) {
         if (!propertyRepository.exists(property.getId())) {
-            throw new PropertyDoesNotExistsException("Property id " + property.getId() + " does not exist");
+            throw new EntityNotFoundException("Property id " + property.getId() + " does not exist");
         }
         return propertyRepository.save(property);
     }

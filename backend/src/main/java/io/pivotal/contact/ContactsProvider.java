@@ -8,7 +8,5 @@ public interface ContactsProvider {
     Contact update(Contact contact);
     List<Contact> findAll();
     Contact findOne(Long id);
-    void delete(Long id);
-    boolean exists(Long id);
-
+    void remove(Long id);
 }

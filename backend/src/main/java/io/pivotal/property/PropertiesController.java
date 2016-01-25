@@ -1,5 +1,6 @@
 package io.pivotal.property;
 
+import io.pivotal.error.ForbiddenActionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+import java.util.List;
 import java.util.Objects;
 
 import static org.springframework.http.HttpStatus.CREATED;
@@ -24,9 +26,7 @@ public class PropertiesController {
     }
 
     @RequestMapping
-    public Iterable<Property> getList() {
-        return propertyProvider.find();
-    }
+    public List<Property> getList() { return propertyProvider.findAll(); }
 
     @RequestMapping(value = "{id}", method = RequestMethod.GET)
     public ResponseEntity<Property> get(@PathVariable Long id) {
@@ -58,23 +58,4 @@ public class PropertiesController {
     private boolean exists(Property property) {
         return property != null;
     }
-
-    @ExceptionHandler(PropertyAlreadyExistsException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    private void handlePropertyAlreadyExistException(){
-        //TODO for something
-    }
-
-    @ExceptionHandler(PropertyDoesNotExistsException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    private void handlePropertyDoesNotExistsException(){
-        //TODO for something
-    }
-
-    @ExceptionHandler(ForbiddenActionException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    private void handleForbiddenException(){
-        //TODO for something
-    }
-
 }

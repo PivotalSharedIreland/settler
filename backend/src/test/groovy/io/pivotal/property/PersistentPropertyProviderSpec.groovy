@@ -1,5 +1,7 @@
 package io.pivotal.property
 
+import io.pivotal.error.EntityAlreadyExistsException
+import io.pivotal.error.EntityNotFoundException
 import spock.lang.Specification
 
 class PersistentPropertyProviderSpec extends Specification {
@@ -12,7 +14,7 @@ class PersistentPropertyProviderSpec extends Specification {
 
     def "return a list of properties"() {
         when:
-        def properties = provider.find()
+        def properties = provider.findAll()
 
         then:
         1 * provider.propertyRepository.findAll() >> {
@@ -63,7 +65,7 @@ class PersistentPropertyProviderSpec extends Specification {
 
         then:
         1 * provider.propertyRepository.exists(property.id) >> true
-        thrown(PropertyAlreadyExistsException)
+        thrown(EntityAlreadyExistsException)
     }
 
     def "delete a specific property"() {
@@ -108,8 +110,7 @@ class PersistentPropertyProviderSpec extends Specification {
 
         then:
         1 * provider.propertyRepository.exists(property.id) >> false
-        thrown(PropertyDoesNotExistsException)
-
+        thrown(EntityNotFoundException)
     }
 
 }

@@ -2,16 +2,19 @@ package io.pivotal.integration
 
 import io.pivotal.SettlerApplication
 import io.pivotal.contact.Contact
+import io.pivotal.property.Property
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.SpringApplicationContextLoader
 import org.springframework.boot.test.TestRestTemplate
 import org.springframework.boot.test.WebIntegrationTest
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpMethod
+import org.springframework.http.RequestEntity
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
 
+import static org.springframework.http.HttpMethod.PUT
 
 @ContextConfiguration(loader = SpringApplicationContextLoader.class, classes = SettlerApplication.class)
 @WebIntegrationTest
@@ -28,10 +31,11 @@ class ContactsIntegrationSpec extends Specification {
         "http://127.0.0.1:$port/${basePath}${path}"
     }
 
+
     def "check all /CONTACTS REST endpoints" () {
 
         when:
-        def emptyContactList = restTemplate.getForEntity(url(), Contact[] )
+        def emptyContactList = contactList()
 
         then:
         // Contacts list is empty
@@ -48,13 +52,41 @@ class ContactsIntegrationSpec extends Specification {
         createdContact.body.phone == "0815554444"
 
         when:
-        def getContact = restTemplate.getForEntity(url("/$createdContact.body.id"), Contact.class)
+        def persistedContact = restTemplate.getForEntity(url("/$createdContact.body.id"), Contact.class)
 
         then:
         // get a contact
-        getContact.body == createdContact.body
+        persistedContact.body == createdContact.body
 
+        then:
+        // get the list with created contact
+        contactList().body.size() == 1
+
+        when:
+        def changedContact = new Contact(id: persistedContact.body.id, phone: "0000000000")
+        def updatedContact = restTemplate.exchange(url("/$persistedContact.body.id"), PUT, new HttpEntity<Contact>(changedContact),Contact.class)
+
+        then:
+        // update a contact
+        updatedContact.body != persistedContact.body
+        updatedContact.body.id == persistedContact.body.id
+        updatedContact.body.name != persistedContact.body.name
+        updatedContact.body.phone != persistedContact.body.phone
+
+        // delete a contact
+        // empty list after contact delete
+        when:
+        restTemplate.delete(url("/$persistedContact.body.id"))
+
+        then:
+        contactList().body.size() == 0
     }
+
+
+    def contactList = {
+       return restTemplate.getForEntity(url(), Contact[])
+    }
+
 
 
 }

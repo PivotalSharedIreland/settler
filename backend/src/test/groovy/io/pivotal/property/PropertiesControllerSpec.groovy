@@ -1,5 +1,8 @@
 package io.pivotal.property
 
+import io.pivotal.error.EntityAlreadyExistsException
+import io.pivotal.error.EntityNotFoundException
+import io.pivotal.error.ErrorHandler
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
@@ -21,7 +24,7 @@ class PropertiesControllerSpec extends Specification {
 
     void setup() {
         propertiesController = new PropertiesController(Mock(PropertyProvider))
-        mockMvc = MockMvcBuilders.standaloneSetup(propertiesController).build()
+        mockMvc = MockMvcBuilders.standaloneSetup(propertiesController).setControllerAdvice(new ErrorHandler()).build()
     }
 
     def "should return properties"() {
@@ -29,7 +32,7 @@ class PropertiesControllerSpec extends Specification {
         def response = mockMvc.perform(get("/properties"))
 
         then:
-        1 * propertiesController.propertyProvider.find() >> {
+        1 * propertiesController.propertyProvider.findAll() >> {
             [new Property(id: 1, address: "Address 1"), new Property(id: 2, address: "Address 2")]
         }
 
@@ -87,7 +90,7 @@ class PropertiesControllerSpec extends Specification {
 
         then:
         1 * propertiesController.propertyProvider.save(_ as Property) >> {
-            throw new PropertyAlreadyExistsException("Property already exists")
+            throw new EntityAlreadyExistsException("Property already exists")
         }
 
         response.andExpect(status().isConflict())
@@ -135,7 +138,7 @@ class PropertiesControllerSpec extends Specification {
 
         then:
         1 * propertiesController.propertyProvider.update(_ as Property) >> { Property property ->
-            throw new PropertyDoesNotExistsException("Property does not exist")
+            throw new EntityNotFoundException("Property does not exist")
         }
 
         response.andExpect(status().isNotFound())

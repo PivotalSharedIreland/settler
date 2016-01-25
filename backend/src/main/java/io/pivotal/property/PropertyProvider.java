@@ -1,7 +1,9 @@
 package io.pivotal.property;
 
+import java.util.List;
+
 public interface PropertyProvider {
-    Iterable<Property> find();
+    List<Property> findAll();
     Property findOne(Long id);
     Property save(Property property);
     Property update(Property property);

@@ -1,36 +1,44 @@
 package io.pivotal.contact;
 
+import com.google.common.collect.Lists;
+import io.pivotal.error.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.util.List;
 
+@Component
 public class DefaultContactsProvider implements ContactsProvider {
+
+    @Autowired
+    private ContactsRepository repository;
 
     @Override
     public Contact save(Contact contact) {
-        return null;
+        return repository.save(contact);
     }
 
     @Override
     public Contact update(Contact contact) {
-        return null;
+        if(!repository.exists(contact.getId())){
+            throw new EntityNotFoundException(String.format("Contacts with id {} does not exist", contact.getId()));
+        }
+        return repository.save(contact);
     }
 
     @Override
     public List<Contact> findAll() {
-        return null;
+        return Lists.newArrayList(repository.findAll());
     }
 
     @Override
     public Contact findOne(Long id) {
-        return null;
+        return repository.findOne(id);
     }
 
     @Override
-    public void delete(Long id) {
-
+    public void remove(Long id) {
+        repository.delete(id);
     }
 
-    @Override
-    public boolean exists(Long id) {
-        return false;
-    }
 }

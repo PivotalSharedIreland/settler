@@ -3,22 +3,20 @@ package io.pivotal.integration
 import io.pivotal.SettlerApplication
 import io.pivotal.property.Property
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.test.IntegrationTest
 import org.springframework.boot.test.SpringApplicationContextLoader
 import org.springframework.boot.test.TestRestTemplate
+import org.springframework.boot.test.WebIntegrationTest
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ContextConfiguration
-import org.springframework.test.context.web.WebAppConfiguration
 import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
 
 import static org.springframework.http.HttpMethod.PUT
 
 @ContextConfiguration(loader = SpringApplicationContextLoader.class, classes = SettlerApplication.class)
-@WebAppConfiguration
-@IntegrationTest
+@WebIntegrationTest
 class PropertiesIntegrationSpec extends Specification{
 
     @Value('${server.port}')
@@ -100,6 +98,8 @@ class PropertiesIntegrationSpec extends Specification{
     }
 
     private ResponseEntity<Property> loadProperties() {
-        restTemplate.getForEntity(url(), Property[]) as ResponseEntity<Property>
+        restTemplate.getForEntity(url(), Property[])
     }
 }
+
+

@@ -43,7 +43,10 @@ public class Property {
         if (getClass() != o.getClass()) {
             return false;
         }
-        return Objects.equals(this, o);
+
+        Property obj = (Property) o;
+
+        return Objects.equals(this.id, obj.id) && Objects.equals(this.address, obj.address);
     }
 
     @Override

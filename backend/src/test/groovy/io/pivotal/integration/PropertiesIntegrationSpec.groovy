@@ -1,4 +1,4 @@
-package io.pivotal.property.integration
+package io.pivotal.integration
 
 import io.pivotal.SettlerApplication
 import io.pivotal.property.Property

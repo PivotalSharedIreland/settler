@@ -1,4 +1,4 @@
-package io.pivotal.property;
+package io.pivotal.error;
 
 public class ForbiddenActionException extends RuntimeException {
     public ForbiddenActionException(String message) {

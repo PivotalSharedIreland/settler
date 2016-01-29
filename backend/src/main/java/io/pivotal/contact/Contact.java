@@ -1,11 +1,19 @@
 package io.pivotal.contact;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import io.pivotal.property.Property;
+
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import java.util.List;
 import java.util.Objects;
 
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Entity
 public class Contact {
 
@@ -15,6 +23,9 @@ public class Contact {
 
     private String name;
     private String phone;
+
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy="contacts")
+    private List<Property> properties;
 
     public Long getId() {
         return id;
@@ -40,6 +51,14 @@ public class Contact {
         this.phone = phone;
     }
 
+
+    public List<Property> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(List<Property> properties) {
+        this.properties = properties;
+    }
 
     @Override
     public boolean equals(Object o) {

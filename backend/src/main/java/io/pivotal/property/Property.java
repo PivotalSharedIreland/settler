@@ -1,13 +1,15 @@
 package io.pivotal.property;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import io.pivotal.contact.Contact;
 import org.hibernate.validator.constraints.NotEmpty;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Entity
 public class Property {
 
@@ -34,6 +36,19 @@ public class Property {
         this.address = address;
     }
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "property_contact",
+            joinColumns = @JoinColumn(name = "property_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "contact_id", referencedColumnName = "id"))
+    private List<Contact> contacts;
+
+    public List<Contact> getContacts() {
+        return contacts;
+    }
+
+    public void setContacts(List<Contact> contacts) {
+        this.contacts = contacts;
+    }
 
     @Override
     public boolean equals(Object o) {

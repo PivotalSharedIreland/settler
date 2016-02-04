@@ -1,0 +1,10 @@
+---
+platform: linux
+
+image: docker:///butzopower/java-8#latest
+
+inputs:
+- name: settler-code
+
+run:
+  path: settler-code/build.sh

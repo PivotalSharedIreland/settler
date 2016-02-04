@@ -8,4 +8,5 @@ inputs:
 
 run:
   path: settler-code/gradlew
-  args: test
+  args:
+    - test

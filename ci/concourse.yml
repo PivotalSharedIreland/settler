@@ -7,4 +7,4 @@ inputs:
 - name: settler-code
 
 run:
-  path: settler-code/build.sh
+  path: settler-code/ci/build.sh

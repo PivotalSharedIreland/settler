@@ -6,5 +6,8 @@ image: docker:///java#8
 inputs:
 - name: settler-code
 
+outputs:
+- name: release-info
+
 run:
   path: settler-code/ci/build.sh

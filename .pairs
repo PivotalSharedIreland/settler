@@ -1,6 +1,7 @@
 pairs:
   bh: Bengt Hammarlund; bhammarlund
   lu: Luis Urraca; lurraca
+  bb: Brian Butz; bbutz
 email:
   prefix: labs-pair
   domain: pivotal.io

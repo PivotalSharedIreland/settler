@@ -1,7 +1,7 @@
 ---
 platform: linux
 
-image: docker:///butzopower/java-8/
+image: docker:///butzopower/java-8#latest
 
 inputs:
 - name: settler-code

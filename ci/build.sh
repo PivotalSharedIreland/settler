@@ -14,3 +14,6 @@ echo $timestamp > $RELEASE_INFO/build-number
 pushd settler-code
 ./gradlew -v
 ./gradlew assemble -PVersion=$timestamp
+
+echo "=================="
+ls settler-code/backend/build/libs

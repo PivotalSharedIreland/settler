@@ -2,19 +2,18 @@
 
 set -e
 
-RELEASE_INFO=$PWD/release-info
+RELEASE_DIR=$PWD/release
 
 timestamp=`date +%s`
 
 export TERM=dumb
 export GRADLE_OPTS="-Dorg.gradle.native=false"
 
-echo $timestamp > $RELEASE_INFO/build-number
+echo $timestamp > $RELEASE_DIR/build-number
 
 pushd settler-code
 ./gradlew -v
 ./gradlew assemble -PVersion=$timestamp
 popd
 
-echo "=================="
-ls settler-code/backend/build/libs
+cp settler-code/backend/build/libs/settler*.jar $RELEASE_DIR

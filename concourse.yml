@@ -1,0 +1,11 @@
+---
+platform: linux
+
+image: docker:///java#8
+
+inputs:
+- name: settler-code
+
+run:
+  path: settler-code/gradlew
+  args: test

@@ -1,7 +1,7 @@
 ---
 platform: linux
 
-image: docker:///qlik/gradle/#latest
+image: docker:///qlik/gradle#latest
 
 inputs:
 - name: settler-code

@@ -1,0 +1,59 @@
+resources:
+  - name: settler-code
+    type: git
+    source:
+      uri: git@github.com:PivotalSharedIreland/settler.git
+      branch: master
+      private_key: {{settler-github-private-key}}
+  
+  - name: settler-release
+    type: github-release
+    source:
+      user: PivotalSharedIreland
+      repository: settler
+      access_token: {{settler-github-access-token}}
+
+  - name: settler-cf
+    type: cf
+    source:
+      api: https://api.run.pivotal.io
+      username: {{settler-cf-username}}
+      password: {{settler-cf-password}}
+      organization: {{settler-cf-organization}}
+      space: {{settler-cf-space}}
+      skip_cert_check: true
+
+jobs:
+  - name: settler-tests
+    plan:
+      - get: settler-code
+        trigger: true
+      - task: unit
+        file: settler-code/ci/test.yml
+
+  - name: settler-build
+    plan:
+      - get: settler-code
+        passed: [settler-tests]
+        trigger: true
+      - task: build
+        file: settler-code/ci/build.yml
+      - put: settler-release
+        params:
+          name: release/build-number
+          tag: release/build-number
+          globs:
+            - release/settler*.jar
+
+  - name: settler-deploy
+    plan:
+      - get: settler-release
+        passed: [settler-build]
+        trigger: true
+      - get: settler-code
+        passed: [settler-build]
+        trigger: true
+      - put: settler-cf
+        params: 
+          manifest: settler-code/ci/cf-manifest.yml
+          path: settler-release/settler-0.0.1.jar

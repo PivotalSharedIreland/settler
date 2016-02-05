@@ -1,0 +1,9 @@
+settler-cf-username: your-cf-username
+settler-cf-password: your-cf-password
+settler-cf-organization: your-cf-organization
+settler-cf-space: your-cf-space
+settler-github-access-token: repo-github-access-token
+settler-github-private-key: |
+  -----BEGIN RSA PRIVATE KEY-----
+     your github private key
+  -----END RSA PRIVATE KEY-----

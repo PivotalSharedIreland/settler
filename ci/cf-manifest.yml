@@ -1,3 +1,2 @@
 applications:
   - name: settler
-    path: settler-release/settler*.jar

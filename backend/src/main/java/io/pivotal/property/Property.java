@@ -1,6 +1,7 @@
 package io.pivotal.property;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import io.pivotal.contact.Contact;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -36,10 +37,10 @@ public class Property {
         this.address = address;
     }
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(name = "property_contact",
-            joinColumns = @JoinColumn(name = "property_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "contact_id", referencedColumnName = "id"))
+            joinColumns = @JoinColumn(name = "property_id"),
+            inverseJoinColumns = @JoinColumn(name = "contact_id"))
     private List<Contact> contacts;
 
     public List<Contact> getContacts() {

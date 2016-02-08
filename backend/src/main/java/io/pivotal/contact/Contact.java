@@ -1,6 +1,7 @@
 package io.pivotal.contact;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import io.pivotal.property.Property;
 
@@ -13,7 +14,7 @@ import javax.persistence.ManyToMany;
 import java.util.List;
 import java.util.Objects;
 
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Entity
 public class Contact {
 
@@ -25,7 +26,8 @@ public class Contact {
     private String phone;
     private String email;
 
-    @ManyToMany(fetch = FetchType.EAGER, mappedBy="contacts")
+    @ManyToMany(fetch = FetchType.LAZY  , mappedBy="contacts")
+    @JsonIdentityReference(alwaysAsId = true)
     private List<Property> properties;
 
     public Long getId() {

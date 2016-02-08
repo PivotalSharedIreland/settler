@@ -1,5 +1,7 @@
 package io.pivotal.property;
 
+import io.pivotal.contact.Contact;
+import io.pivotal.contact.ContactsProvider;
 import io.pivotal.error.ForbiddenActionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,15 +20,16 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 @RequestMapping("/properties")
 public class PropertiesController {
 
+    @Autowired
     private PropertyProvider propertyProvider;
 
     @Autowired
-    public PropertiesController(PropertyProvider propertyProvider) {
-        this.propertyProvider = propertyProvider;
-    }
+    private ContactsProvider contactsProvider;
 
     @RequestMapping
-    public List<Property> getList() { return propertyProvider.findAll(); }
+    public List<Property> getList() {
+        return propertyProvider.findAll();
+    }
 
     @RequestMapping(value = "{id}", method = RequestMethod.GET)
     public ResponseEntity<Property> get(@PathVariable Long id) {
@@ -38,7 +41,23 @@ public class PropertiesController {
     @RequestMapping(method = RequestMethod.POST)
     @ResponseStatus(CREATED)
     public Property save(@Valid @RequestBody Property property) {
-          return propertyProvider.save(property);
+
+        createNewContact(property);
+
+        return propertyProvider.save(property);
+    }
+
+    private void createNewContact(@Valid @RequestBody Property property) {
+        for (Contact contact : property.getContacts()){
+            //check contact
+            // if property contains id -> save property
+            // else create the contact
+            // and then save the property
+            if(contact.getId() == null){
+                Contact saved = contactsProvider.save(contact);
+                contact.setId(saved.getId());
+            }
+        }
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
@@ -49,9 +68,12 @@ public class PropertiesController {
 
     @RequestMapping(value = "{id}", method = RequestMethod.PUT)
     public Property update(@PathVariable Long id, @RequestBody Property property) {
-        if(!Objects.equals(id, property.getId())){
+        if (!Objects.equals(id, property.getId())) {
             throw new ForbiddenActionException("Request body does not match the property id");
         }
+
+        createNewContact(property);
+
         return propertyProvider.update(property);
     }
 

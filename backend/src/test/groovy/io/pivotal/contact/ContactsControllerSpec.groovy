@@ -25,7 +25,7 @@ class ContactsControllerSpec extends Specification{
 
     def "create a new contact" () {
         given:
-        def content = '{"name": "Contact 1", "phone": "0815554444"}'
+        def content = '{"name": "Contact 1", "phone": "0815554444", "email": "test@settler.io"}'
 
         when:
         def response = mockMvc.perform(post("/contacts").contentType(MediaType.APPLICATION_JSON_UTF8).content(content))
@@ -35,8 +35,9 @@ class ContactsControllerSpec extends Specification{
 
             assert contact.name == 'Contact 1'
             assert contact.phone == '0815554444'
+            assert contact.email == 'test@settler.io'
 
-            new Contact(name: "Contact 1", phone: "0815554444")
+            new Contact(name: "Contact 1", phone: "0815554444", email: "test@settler.io")
         }
         response.andExpect(status().isCreated()).andExpect(jsonPath('$.name', equalTo('Contact 1')))
     }
@@ -58,7 +59,7 @@ class ContactsControllerSpec extends Specification{
 
         then:
         1 * contactsController.contactProvider.findOne(1) >> {
-            new Contact(id: 1, name: "Existing contact", phone: "0815554444")
+            new Contact(id: 1, name: "Existing contact", phone: "0815554444", email: "test@settler.io")
         }
         response.andExpect(status().isOk()).andExpect(jsonPath('$.name', equalTo('Existing contact')))
     }
@@ -87,7 +88,7 @@ class ContactsControllerSpec extends Specification{
 
     def "update a contact" () {
         given:
-        def content = '{"id": 1, "name": "Contact 1", "phone": "1234"}'
+        def content = '{"id": 1, "name": "Contact 1", "phone": "1234", "email": "test@settler.io"}'
 
         when:
         def response = mockMvc.perform(put("/contacts/1").contentType(MediaType.APPLICATION_JSON_UTF8).content(content))
@@ -97,8 +98,9 @@ class ContactsControllerSpec extends Specification{
 
             assert contact.name == 'Contact 1'
             assert contact.phone == '1234'
+            assert contact.email == 'test@settler.io'
 
-            new Contact(name: "Contact 1", phone: "updated number")
+            new Contact(name: "Contact 1", phone: "updated number", email: "new@settler.io")
         }
         response.andExpect(status().isOk()).andExpect(jsonPath('$.phone', equalTo('updated number')))
     }

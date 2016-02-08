@@ -42,7 +42,7 @@ class ContactsIntegrationSpec extends Specification {
         emptyContactList.body.size() == 0
 
         when:
-        def contact = new Contact(name: "Contact 1", phone: "0815554444")
+        def contact = new Contact(name: "Contact 1", phone: "0815554444", email: "test@settler.io")
         def createdContact = restTemplate.postForEntity(url(), contact, Contact.class)
 
         then:
@@ -50,6 +50,7 @@ class ContactsIntegrationSpec extends Specification {
         createdContact.body.id != null
         createdContact.body.name == "Contact 1"
         createdContact.body.phone == "0815554444"
+        createdContact.body.email == "test@settler.io"
 
         when:
         def persistedContact = restTemplate.getForEntity(url("/$createdContact.body.id"), Contact.class)
@@ -63,15 +64,17 @@ class ContactsIntegrationSpec extends Specification {
         contactList().body.size() == 1
 
         when:
-        def changedContact = new Contact(id: persistedContact.body.id, phone: "0000000000")
+        def changedContact = new Contact(id: persistedContact.body.id, name: "Changed name", phone: "0000000000", email: "new@settler.io")
         def updatedContact = restTemplate.exchange(url("/$persistedContact.body.id"), PUT, new HttpEntity<Contact>(changedContact),Contact.class)
 
         then:
         // update a contact
+
         updatedContact.body != persistedContact.body
         updatedContact.body.id == persistedContact.body.id
-        updatedContact.body.name != persistedContact.body.name
-        updatedContact.body.phone != persistedContact.body.phone
+        updatedContact.body.name == "Changed name"
+        updatedContact.body.phone == "0000000000"
+        updatedContact.body.email == "new@settler.io"
 
         // delete a contact
         // empty list after contact delete

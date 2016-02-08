@@ -9,7 +9,6 @@ class DefaultContactsProviderSpec extends Specification {
 
     def setup(){
         contactsProvider = new DefaultContactsProvider(repository: Mock(ContactsRepository))
-
     }
 
     def "save a new contact"() {

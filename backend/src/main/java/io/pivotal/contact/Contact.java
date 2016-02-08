@@ -23,6 +23,7 @@ public class Contact {
 
     private String name;
     private String phone;
+    private String email;
 
     @ManyToMany(fetch = FetchType.EAGER, mappedBy="contacts")
     private List<Property> properties;
@@ -51,6 +52,14 @@ public class Contact {
         this.phone = phone;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
 
     public List<Property> getProperties() {
         return properties;
@@ -71,11 +80,11 @@ public class Contact {
 
         Contact obj = (Contact) o;
 
-        return Objects.equals(this.id, obj.id) && Objects.equals(this.name, obj.name) && Objects.equals(this.phone, obj.phone);
+        return Objects.equals(this.id, obj.id) && Objects.equals(this.name, obj.name) && Objects.equals(this.phone, obj.phone) && Objects.equals(this.email, obj.email);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.id, this.name, this.phone);
+        return Objects.hash(this.id, this.name, this.phone, this.email);
     }
 }

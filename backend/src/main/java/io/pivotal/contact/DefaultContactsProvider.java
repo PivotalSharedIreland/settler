@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Component
 public class DefaultContactsProvider implements ContactsProvider {
 
     @Autowired
@@ -23,6 +22,7 @@ public class DefaultContactsProvider implements ContactsProvider {
         if(!repository.exists(contact.getId())){
             throw new EntityNotFoundException(String.format("Contacts with id {} does not exist", contact.getId()));
         }
+
         return repository.save(contact);
     }
 

@@ -1,9 +1,11 @@
 package io.pivotal.property;
 
 import com.google.common.collect.Lists;
+import io.pivotal.SettlerApplication;
 import io.pivotal.error.EntityAlreadyExistsException;
 import io.pivotal.error.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.SpringApplicationConfiguration;
 
 import java.util.List;
 

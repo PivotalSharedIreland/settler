@@ -1,6 +1,7 @@
 package io.pivotal.integration
 
 import io.pivotal.SettlerApplication
+import io.pivotal.contact.Contact
 import io.pivotal.property.Property
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.SpringApplicationContextLoader
@@ -82,6 +83,26 @@ class PropertiesIntegrationSpec extends Specification{
         then:
         propertiesList.statusCode == HttpStatus.OK
         propertiesList.body.size() == 0
+
+
+    }
+
+    def "GET /Properties with contacts"() {
+        given:
+        def property = new Property(address: "Test Address")
+        def contact1 = new Contact(name: "Test 1", phone: "0855554444")
+        def contact2 = new Contact(name: "Test 2", phone: "0855552222")
+        property.getContacts().add(contact1)
+        property.getContacts().add(contact2)
+
+        when:
+        createProperty(property)
+        def propertiesList = loadProperties()
+
+        then:
+        propertiesList.body[0].contacts.size() == 2
+        propertiesList.body[0].contacts[0].name == "Test 1"
+        propertiesList.body[0].contacts[1].name == "Test 2"
 
     }
 

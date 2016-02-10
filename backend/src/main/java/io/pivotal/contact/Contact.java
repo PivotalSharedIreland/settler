@@ -1,8 +1,10 @@
 package io.pivotal.contact;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import io.pivotal.property.Property;
+import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -10,23 +12,27 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Objects;
 
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Entity
 public class Contact {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
+    // TODO: Add anotation for NotEmpty name, look into conditional validation. API is expecting id only for existing contacts
     private String name;
     private String phone;
     private String email;
-
-    @ManyToMany(fetch = FetchType.EAGER, mappedBy="contacts")
-    private List<Property> properties;
+    //    @JsonIdentityReference(alwaysAsId = true)
+    //    @ManyToOne(fetch = FetchType.EAGER)
+    //    private Property property;
 
     public Long getId() {
         return id;
@@ -58,15 +64,6 @@ public class Contact {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-
-    public List<Property> getProperties() {
-        return properties;
-    }
-
-    public void setProperties(List<Property> properties) {
-        this.properties = properties;
     }
 
     @Override

@@ -23,7 +23,7 @@ class PropertiesControllerSpec extends Specification {
     PropertiesController propertiesController
 
     void setup() {
-        propertiesController = new PropertiesController(Mock(PropertyProvider))
+        propertiesController = new PropertiesController(Mock(PropertyManager))
         mockMvc = MockMvcBuilders.standaloneSetup(propertiesController).setControllerAdvice(new ErrorHandler()).build()
     }
 
@@ -32,7 +32,7 @@ class PropertiesControllerSpec extends Specification {
         def response = mockMvc.perform(get("/properties"))
 
         then:
-        1 * propertiesController.propertyProvider.findAll() >> {
+        1 * propertiesController.propertyManager.findAll() >> {
             [new Property(id: 1, address: "Address 1"), new Property(id: 2, address: "Address 2")]
         }
 
@@ -45,7 +45,7 @@ class PropertiesControllerSpec extends Specification {
         def response = mockMvc.perform(get("/properties/1"))
 
         then:
-        1 * propertiesController.propertyProvider.findOne(1L) >> {
+        1 * propertiesController.propertyManager.findOne(1L) >> {
             new Property(id: 1, address: "Address 1")
         }
 
@@ -57,7 +57,7 @@ class PropertiesControllerSpec extends Specification {
         def response = mockMvc.perform(get("/properties/500"))
 
         then:
-        1 * propertiesController.propertyProvider.findOne(500) >> {
+        1 * propertiesController.propertyManager.findOne(500) >> {
             null
         }
 
@@ -72,7 +72,7 @@ class PropertiesControllerSpec extends Specification {
         def response = mockMvc.perform(post("/properties").contentType(MediaType.APPLICATION_JSON_UTF8).content(content))
 
         then:
-        1 * propertiesController.propertyProvider.save(_ as Property) >> { Property input  ->
+        1 * propertiesController.propertyManager.save(_ as Property) >> { Property input  ->
             input
         }
 
@@ -89,7 +89,7 @@ class PropertiesControllerSpec extends Specification {
         def response = mockMvc.perform(post("/properties").contentType(MediaType.APPLICATION_JSON_UTF8).content(content))
 
         then:
-        1 * propertiesController.propertyProvider.save(_ as Property) >> {
+        1 * propertiesController.propertyManager.save(_ as Property) >> {
             throw new EntityAlreadyExistsException("Property already exists")
         }
 
@@ -105,7 +105,7 @@ class PropertiesControllerSpec extends Specification {
         def response = mockMvc.perform(delete("/properties/1").contentType(MediaType.APPLICATION_JSON_UTF8).content(content))
 
         then:
-        1 * propertiesController.propertyProvider.remove(1L)
+        1 * propertiesController.propertyManager.remove(1L)
 
         response.andExpect(status().isNoContent())
     }
@@ -119,7 +119,7 @@ class PropertiesControllerSpec extends Specification {
         def response = mockMvc.perform(put("/properties/1").contentType(MediaType.APPLICATION_JSON_UTF8).content(content))
 
         then:
-        1 * propertiesController.propertyProvider.update(_ as Property) >> { Property property ->
+        1 * propertiesController.propertyManager.update(_ as Property) >> { Property property ->
              new Property(id: 1, address: "New address")
         }
 
@@ -137,7 +137,7 @@ class PropertiesControllerSpec extends Specification {
         def response = mockMvc.perform(put("/properties/1").contentType(MediaType.APPLICATION_JSON_UTF8).content(content))
 
         then:
-        1 * propertiesController.propertyProvider.update(_ as Property) >> { Property property ->
+        1 * propertiesController.propertyManager.update(_ as Property) >> { Property property ->
             throw new EntityNotFoundException("Property does not exist")
         }
 
@@ -153,7 +153,7 @@ class PropertiesControllerSpec extends Specification {
         def response = mockMvc.perform(put("/properties/1").contentType(MediaType.APPLICATION_JSON_UTF8).content(content))
 
         then:
-        0 * propertiesController.propertyProvider.update(_ as Property)
+        0 * propertiesController.propertyManager.update(_ as Property)
 
         response.andExpect(status().isForbidden())
     }

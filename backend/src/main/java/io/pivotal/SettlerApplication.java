@@ -1,6 +1,9 @@
 package io.pivotal;
 
+import io.pivotal.contact.ContactsProvider;
+import io.pivotal.contact.DefaultContactsProvider;
 import io.pivotal.property.PersistentPropertyProvider;
+import io.pivotal.property.PropertyManager;
 import io.pivotal.property.PropertyProvider;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -23,6 +26,12 @@ public class  SettlerApplication {
     public PropertyProvider propertyProvider() {
         return new PersistentPropertyProvider();
     }
+
+    @Bean
+    public ContactsProvider contactsProvider() { return new DefaultContactsProvider(); }
+
+    @Bean
+    public PropertyManager propertyManager() { return new PropertyManager(propertyProvider(), contactsProvider()); }
 
 
     @Bean
